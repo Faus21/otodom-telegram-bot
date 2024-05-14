@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,7 +34,8 @@ public class OtodomParser {
                 .collect(Collectors.toSet());
     }
 
-    public void getOfferDescriptionFromUrl(Set<String> offersUrls) throws Exception{
+    public List<String> getOfferDescriptionFromUrl(Set<String> offersUrls) throws Exception{
+        List<String> offersWithDescription = new ArrayList<>();
         for (String href :
                 offersUrls) {
             Document offerPage = Jsoup.connect(MAIN_PAGE_URL + href)
@@ -45,9 +47,10 @@ public class OtodomParser {
             getOfferInfoFromTable(offerPage, offerText);
             getOfferDescription(offerPage,offerText);
 
-            System.out.println(offerText);
-            System.out.println();
+            offersWithDescription.add(offerText.toString());
         }
+
+        return offersWithDescription;
     }
 
     public void getOfferInfoFromHeader(Document offerPage, StringBuilder offerText){
@@ -81,7 +84,7 @@ public class OtodomParser {
     }
 
     public void getOfferDescription(Document offerPage, StringBuilder offerText){
-        offerText.append("\nDescription: ");
+        offerText.append("\nOpis oferty: ");
         offerText.append(offerPage.select("div")
                 .stream().filter(e -> e.className().equals("css-1wekrze e1lbnp621"))
                 .toList().get(0).text());
